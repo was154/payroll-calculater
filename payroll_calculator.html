@@ -34,10 +34,6 @@
     <span class="nowrap">（いかなる理由でも当てはまる場合は✔）</span>
   </div>
 
-  <div class="row">
-    <label class="nowrap">指名料: <input type="number" id="nominationFee" value="0"> 円</label>
-  </div>
-
   <div id="courseContainer"></div>
   <button onclick="addCourse()">コースを追加</button>
   <button onclick="calculate()">計算</button>
@@ -82,10 +78,10 @@
     }
 
     function calculate() {
-      const nominationFee = parseInt(document.getElementById('nominationFee').value) || 0;
       let totalWage = 0;
       let totalDiscount = 0;
       let totalCash = 0;
+      let totalNominations = 0;
 
       const courseBlocks = document.querySelectorAll('.course-block');
       courseBlocks.forEach(block => {
@@ -96,16 +92,17 @@
         const basePrice = courseOptions[courseName];
 
         totalDiscount += discount;
-        if (isNominated) totalWage += nominationFee;
+        if (isNominated) totalNominations++;
         totalWage += basePrice;
 
         if (isCard) {
-          totalCash += basePrice + (isNominated ? nominationFee : 0);
+          totalCash += basePrice + (isNominated ? 1000 : 0);
         }
       });
 
-      const wageAfter = totalWage - totalDiscount - 1000;
-      const cashLeft = totalWage - totalCash - totalDiscount;
+      const nominationTotal = totalNominations * 1000;
+      const wageAfter = totalWage + nominationTotal - totalDiscount - 1000;
+      const cashLeft = totalWage + nominationTotal - totalCash - totalDiscount;
 
       document.getElementById('salary').textContent = courseBlocks.length ? wageAfter : 0;
       document.getElementById('cashLeft').textContent = courseBlocks.length ? cashLeft : 0;
